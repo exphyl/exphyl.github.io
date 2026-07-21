@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sweater BLE Remote</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; background: #111; color: #fff; padding: 20px; }
+    h1 { color: #ff9800; }
+    .btn { display: block; width: 80%; max-width: 300px; margin: 15px auto; padding: 15px; font-size: 18px; border: none; border-radius: 10px; background: #333; color: #fff; font-weight: bold; }
+    .btn-connect { background: #007aff; }
+    .btn-next { background: #ff9800; color: #000; }
+    .slider { width: 80%; max-width: 300px; margin-top: 20px; }
+    #status { margin-bottom: 20px; color: #888; }
+  </style>
+</head>
+<body>
+  <h1>Sweater Remote (BLE)</h1>
+  <div id="status">Status: Disconnected</div>
+
+  <button class="btn btn-connect" onclick="connectBLE()">Connect to Sweater</button>
+  <button class="btn btn-next" onclick="sendCommand('NEXT')">Cycle Next Mode</button>
+  <button class="btn" onclick="sendCommand('M:1')">1: Light Trails</button>
+  <button class="btn" onclick="sendCommand('M:2')">2: Constellations</button>
+  <button class="btn" onclick="sendCommand('M:3')">3: Fireplace</button>
+
+  <br>
+  <label>Brightness: <span id="bval">40</span></label><br>
+  <input type="range" class="slider" min="5" max="150" value="40" onchange="sendCommand('B:' + this.value); document.getElementById('bval').innerText = this.value;">
+
+  <script>
+    const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+    const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+    let sweaterCharacteristic = null;
+
+    async function connectBLE() {
+      try {
+        document.getElementById('status').innerText = "Searching...";
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ name: 'Fiber-Sweater-BLE' }],
+          optionalServices: [SERVICE_UUID]
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        sweaterCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+        document.getElementById('status').innerText = "Connected!";
+        document.getElementById('status').style.color = "#34c759";
+      } catch (error) {
+        console.log(error);
+        document.getElementById('status').innerText = "Connection Failed";
+        document.getElementById('status').style.color = "#ff3b30";
+      }
+    }
+
+    async function sendCommand(cmd) {
+      if (sweaterCharacteristic) {
+        let encoder = new TextEncoder();
+        await sweaterCharacteristic.writeValue(encoder.encode(cmd));
+      } else {
+        alert("Please connect via Bluetooth first!");
+      }
+    }
+  </script>
+</body>
+</html>
