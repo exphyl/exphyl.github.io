@@ -10,6 +10,7 @@
     .btn-connect { background: #007aff; }
     .btn-power { background: #ff3b30; }
     .btn-next { background: #ff9800; color: #000; }
+    .btn-flash { background: #ffffff; color: #000; }
     .slider { width: 80%; max-width: 300px; margin-top: 20px; }
     #status { margin-bottom: 20px; color: #888; }
   </style>
@@ -24,6 +25,7 @@
   <button class="btn" onclick="sendCommand('M:1')">1: Light Trails</button>
   <button class="btn" onclick="sendCommand('M:2')">2: Constellations</button>
   <button class="btn" onclick="sendCommand('M:3')">3: Fireplace</button>
+  <button class="btn btn-flash" onclick="sendCommand('M:4')">4: Flashlight (White)</button>
 
   <br>
   <label>Brightness: <span id="bval">40</span></label><br>
