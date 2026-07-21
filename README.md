@@ -1,2 +1,2 @@
 # exphyl.github.io
-my blog
+Random stuff
